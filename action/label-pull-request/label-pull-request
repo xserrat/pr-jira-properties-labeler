@@ -28,7 +28,24 @@ ref=$(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH")
 owner=$(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH")
 repo=$(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
 
-main(){
+join_by() {
+    local d=$1
+    shift
+    echo -n "$1"; shift; printf "%s" "${@/#/$d}"
+}
+
+add_labels() {
+    local labels=$(join_by \",\" \"$1\")
+    echo "labels are: $labels"
+
+    curl -X POST \
+    -H "${AUTH_HEADER}" \
+    -H "${API_HEADER}" \
+    -d "{\"labels\": [${labels}]}" \
+    "${URI}/repos/${owner}/${repo}/issues/${pr_number}/labels"
+}
+
+main() {
     # In every runtime environment for an Action you have the GITHUB_EVENT_PATH
     # populated. This file holds the JSON data for the event that was triggered.
     # From that we can get the status of the pull request and if it was merged.
@@ -62,13 +79,8 @@ main(){
 #	fi
 
 	if [[ "$action" == "opened" ]]; then
-        curl -X POST \
-            -H "${AUTH_HEADER}" \
-			-H "${API_HEADER}" \
-            -d '{"labels": ["needs feedback"]}' \
-			"${URI}/repos/${owner}/${repo}/issues/${pr_number}/labels"
-#            https://api.github.com/repos/xserrat/test-github-actions/issues/2/labels
-
+	    local on_open_labels=( 'needs feedback' 'Prio 1' )
+	    add_labels $on_open_labels
 	fi
 }
 
