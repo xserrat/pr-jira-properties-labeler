@@ -61,7 +61,7 @@ main(){
 #		echo "Branch delete success!"
 #	fi
 
-	if [[ "$action" == "open" ]]; then
+	if [[ "$action" == "opened" ]]; then
         curl -X POST \
             -H "${AUTH_HEADER}" \
 			-H "${API_HEADER}" \
