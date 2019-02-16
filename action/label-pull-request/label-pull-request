@@ -65,8 +65,6 @@ main(){
         curl -X POST \
             -H "${AUTH_HEADER}" \
 			-H "${API_HEADER}" \
-			-H 'Accept: application/vnd.github.symmetra-preview+json' \
-            -H 'Authorization: Basic eHNlcnJhdDowZTczYjYwMjA4Y2ViOWQ4MmZkODJiOTRmNzQxOTZlYTRkNDI3MGE2' \
             -d '{"labels": ["needs feedback"]}' \
 			"${URI}/repos/${owner}/${repo}/issues/${pr_number}/labels"
 #            https://api.github.com/repos/xserrat/test-github-actions/issues/2/labels
