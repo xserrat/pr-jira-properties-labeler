@@ -14,7 +14,7 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
 	exit 1
 fi
 
-URI=https://api.github.com
+URI_GITHUB=https://api.github.com
 API_VERSION=v3
 API_HEADER="Accept: application/vnd.github.${API_VERSION}+json"
 AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
@@ -22,27 +22,36 @@ REVIEWERS=(
     xserrat
     mcornella
 )
-LABELS_ON_OPEN_PULL_REQUEST=( needs-feedback )
+labels_on_open_pull_request=("needs feedback")
 
 ref=$(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH")
 owner=$(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH")
 repo=$(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
 
-join_by() {
-    local d=$1
-    shift
-    echo -n "$1"; shift; printf "%s" "${@/#/$d}"
+array_to_json_array() {
+    local array=$1
+    printf '%s\n' "${array[@]}" | jq -R . | jq -s .
 }
 
 add_labels() {
-    local labels=$(join_by \",\" \"$1\")
-    echo "labels are: $labels"
+    echo $labels_on_open_pull_request
+    local labels_to_add=$(array_to_json_array $labels_on_open_pull_request)
+    echo "string labels: $labels_to_add"
+    exit 0;
 
     curl -X POST \
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
-    -d "{\"labels\": [${labels}]}" \
-    "${URI}/repos/${owner}/${repo}/issues/${pr_number}/labels"
+    -d "{\"labels\": ${labels_to_add}}" \
+    "${URI_GITHUB}/repos/${owner}/${repo}/issues/${pr_number}/labels"
+}
+
+get_jira_priority_of() {
+    local issue_code=$1
+    curl -X GET \
+    -H "Authorization: Basic ${JIRA_ENCODED_TOKEN}" \
+    "${URI_JIRA}/rest/api/latest/issue/${issue_code}"| \
+    jq --raw-output .fields.priority.name
 }
 
 main() {
@@ -73,14 +82,19 @@ main() {
 #		curl -XDELETE -sSL \
 #			-H "${AUTH_HEADER}" \
 #			-H "${API_HEADER}" \
-#			"${URI}/repos/${owner}/${repo}/git/refs/heads/${ref}"
+#			"${URI_GITHUB}/repos/${owner}/${repo}/git/refs/heads/${ref}"
 #
 #		echo "Branch delete success!"
 #	fi
 
-	if [[ "$action" == "opened" ]]; then
-	    local on_open_labels=( 'needs feedback' 'Prio 1' )
-	    add_labels $on_open_labels
+	if [[ "$action" == 'opened' ]]; then
+	    local priority=$(get_jira_priority_of 'UVFT-3005')
+	    echo "Priority: $priority"
+	    labels_on_open_pull_request+=($priority)
+
+	    echo "after add prio -> ${labels_on_open_pull_request[@]}"
+
+	    add_labels
 	fi
 }
 
