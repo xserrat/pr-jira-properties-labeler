@@ -26,7 +26,6 @@ owner=$(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH"
 repo=$(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
 
 create_labels() {
-
     curl -X POST \
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
@@ -37,12 +36,12 @@ create_labels() {
 add_labels_to_the_pr() {
     local all_raw_labels=$@
     local labels_array=$(echo $all_raw_labels | tr "," "\n")
-    local labels_to_add=$(printf '%s\n' "${labels_array[@]}" | jq -R . | jq -s .)
+    local labels_to_add_in_json_format=$(printf '%s\n' "${labels_array[@]}" | jq -R . | jq -s .)
 
     curl -X POST \
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
-    -d '{"labels": '"${labels_to_add}"'}' \
+    -d '{"labels": '"${labels_to_add_in_json_format}"'}' \
     "${URI_GITHUB}/repos/${owner}/${repo}/issues/${pr_number}/labels"
 }
 
@@ -106,14 +105,13 @@ main() {
 #	fi
 
 	if [[ "$action" == 'opened' ]]; then
+	    echo "Retrieving the JIRA issue code from the PR title..."
 	    local issue_code=$(get_jira_code_from_pr_title $pr_title)
-	    echo "Issue code: $issue_code"
+	    echo "Retrieving the priority of the issue code $issue_code from JIRA..."
 	    local priority=$(get_jira_priority_of $issue_code)
-	    echo "Priority: $priority"
+        echo "Appending the priority label $priority to the labels to add when PR is opened..."
 	    LABELS_ON_PULL_REQUEST_OPENED+=",$priority"
-
-	    echo "Before add_labels -> $LABELS_ON_PULL_REQUEST_OPENED";
-
+        echo "Adding labels $LABELS_ON_PULL_REQUEST_OPENED to the PR..."
 	    add_labels_to_the_pr $LABELS_ON_PULL_REQUEST_OPENED
 	fi
 }
