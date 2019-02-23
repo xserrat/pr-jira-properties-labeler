@@ -48,7 +48,6 @@ add_labels_to_the_pr() {
 
 get_jira_priority_of() {
     local issue_code=$1
-    echo "Issue code: $issue_code"
     curl -X GET \
     -H "Authorization: Basic ${JIRA_ENCODED_TOKEN}" \
     "${URI_JIRA}/rest/api/latest/issue/${issue_code}"| \
