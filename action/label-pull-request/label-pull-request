@@ -25,7 +25,16 @@ ref=$(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH")
 owner=$(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH")
 repo=$(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
 
-add_labels() {
+create_labels() {
+
+    curl -X POST \
+    -H "${AUTH_HEADER}" \
+    -H "${API_HEADER}" \
+    -d '{"labels": '"${labels_to_add}"'}' \
+    "${URI_GITHUB}/repos/${owner}/${repo}/labels"
+}
+
+add_labels_to_the_pr() {
     local all_raw_labels=$@
     local labels_array=$(echo $all_raw_labels | tr "," "\n")
     local labels_to_add=$(printf '%s\n' "${labels_array[@]}" | jq -R . | jq -s .)
@@ -48,7 +57,7 @@ get_jira_priority_of() {
 
 get_jira_code_from_pr_title() {
     local pr_title=$@
-#    local str =~ s/$REGEXP_FOR_JIRA_CODE_ON_PR_TITLE/'$1'/rg;
+    echo $pr_title | sed -E 's/([A-Z]{4}-[0-9]{4}).*/\1/'
 }
 
 set_default_env_variables_if_needed() {
@@ -57,7 +66,7 @@ set_default_env_variables_if_needed() {
     fi
 
     if [[ -z $LABELS_ON_PULL_REQUEST_OPENED ]]; then
-        LABELS_ON_PULL_REQUEST_OPENED="needs feedback,Prio 3"
+        LABELS_ON_PULL_REQUEST_OPENED="needs feedback"
     fi
 }
 
@@ -98,13 +107,15 @@ main() {
 #	fi
 
 	if [[ "$action" == 'opened' ]]; then
-	    local priority=$(get_jira_priority_of 'UVFT-3005')
+	    local issue_code=$(get_jira_code_from_pr_title $pr_title)
+	    echo "Issue code: $issue_code"
+	    local priority=$(get_jira_priority_of $issue_code)
 	    echo "Priority: $priority"
-	    labels_on_open_pull_request+=($priority)
+	    LABELS_ON_PULL_REQUEST_OPENED+=",$priority"
 
 	    echo "Before add_labels -> $LABELS_ON_PULL_REQUEST_OPENED";
 
-	    add_labels $LABELS_ON_PULL_REQUEST_OPENED
+	    add_labels_to_the_pr $LABELS_ON_PULL_REQUEST_OPENED
 	fi
 }
 
