@@ -29,7 +29,11 @@ add_labels() {
 
     local raw_labels=$1
 
+    echo "Raw: $raw_labels"
+
     local labels=$(echo $raw_labels | tr "," "\n")
+
+    echo "array: ${labels[@]}"; exit 0;
 
     labels_to_add=$(printf '%s\n' "${labels[@]}" | jq -R . | jq -s .)
 
@@ -62,7 +66,7 @@ set_default_env_variables_if_needed() {
     fi
 
     if [[ -z $LABELS_ON_PULL_REQUEST_OPENED ]]; then
-        LABELS_ON_PULL_REQUEST_OPENED='needs feedback'
+        LABELS_ON_PULL_REQUEST_OPENED="needs feedback, Prio 3"
     fi
 }
 
@@ -107,9 +111,7 @@ main() {
 	    echo "Priority: $priority"
 	    labels_on_open_pull_request+=($priority)
 
-	    echo "after add prio -> ${labels_on_open_pull_request[@]}"
-
-	    add_labels
+	    add_labels $LABELS_ON_PULL_REQUEST_OPENED
 	fi
 }
 
