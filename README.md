@@ -5,7 +5,16 @@ This repository contains some custom Github actions.
 ## 1. Label Pull Request
 
 This action allows you to add specific labels when a PR is opened. Also, the action is connected to Jira in order to retrieve
-the priority of the feature using the issue code added in the PR title.
+the priority of the feature using the issue code added in the PR title. You have to take into account that you need to listen to the `pull_request` event in order to use this action. Here you have an example:
+
+```hcl
+workflow "on pull request label it" {
+  on = "pull_request"
+  resolves = [
+    "Label Pull Request"
+  ]
+}
+```
 
 ### Usage:
 
