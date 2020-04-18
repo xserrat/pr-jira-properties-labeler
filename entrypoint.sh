@@ -2,6 +2,12 @@
 set -e
 set -o pipefail
 
+GITHUB_TOKEN=$1
+JIRA_URI=$2
+JIRA_ENCODED_TOKEN=$3
+regexp_jira_issue_code_on_pr_title=$4
+issue_properties=$6
+
 # This is populated by our secret from the Workflow file.
 if [[ -z "$GITHUB_TOKEN" ]]; then
 	echo "Set the GITHUB_TOKEN env variable."
@@ -14,7 +20,7 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
 	exit 1
 fi
 
-URI_GITHUB=https://api.github.com
+GITHUB_URI=https://api.github.com
 API_VERSION=v3
 API_HEADER="Accept: application/vnd.github.${API_VERSION}+json"
 AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
@@ -40,7 +46,7 @@ add_reviewers_to_the_pr() {
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
     -d '{"reviewers": '"${reviewers_to_add_in_json_format}"'}' \
-    "${URI_GITHUB}/repos/${owner}/${repo}/pulls/${pr_number}/requested_reviewers"
+    "${GITHUB_URI}/repos/${owner}/${repo}/pulls/${pr_number}/requested_reviewers"
 }
 
 add_labels_to_the_pr() {
@@ -52,25 +58,25 @@ add_labels_to_the_pr() {
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
     -d '{"labels": '"${labels_to_add_in_json_format}"'}' \
-    "${URI_GITHUB}/repos/${owner}/${repo}/issues/${pr_number}/labels"
+    "${GITHUB_URI}/repos/${owner}/${repo}/issues/${pr_number}/labels"
 }
 
 get_jira_priority_of() {
     local issue_code=$1
     curl -X GET \
     -H "Authorization: Basic ${JIRA_ENCODED_TOKEN}" \
-    "${URI_JIRA}/rest/api/latest/issue/${issue_code}"| \
+    "${JIRA_URI}/rest/api/latest/issue/${issue_code}"| \
     jq --raw-output .fields.priority.name
 }
 
 get_jira_code_from_pr_title() {
     local pr_title=$@
-    echo $pr_title | sed -E "s/$REGEXP_FOR_JIRA_CODE_ON_PR_TITLE/\1/"
+    echo $pr_title | sed -E "s/$regexp_jira_issue_code_on_pr_title/\1/"
 }
 
 set_default_env_variables_if_needed() {
-    if [[ -z $REGEXP_FOR_JIRA_CODE_ON_PR_TITLE ]]; then
-        REGEXP_FOR_JIRA_CODE_ON_PR_TITLE = '^([A-Z]{4}-[0-9]{4})'
+    if [[ -z $regexp_jira_issue_code_on_pr_title ]]; then
+        regexp_jira_issue_code_on_pr_title = '^([A-Z]{4}-[0-9]{4})'
     fi
 
     if [[ -z $LABELS_ON_PULL_REQUEST_OPENED ]]; then
@@ -92,28 +98,6 @@ main() {
 	pr_author=$(jq --raw-output .pull_request.user.login "$GITHUB_EVENT_PATH")
 
 	echo "DEBUG -> action: $action merged: $merged pr_number: $pr_number title: $pr_title"
-
-#	if [[ "$merged" == "true" ]]; then
-        # We only care about the closed event and if it was merged.
-        # If so, delete the branch.
-#		ref=$(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH")
-#		owner=$(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH")
-#		repo=$(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
-
-#		if [[ "$ref" == "$default_branch" ]]; then
-#			# Never delete the default branch.
-#			echo "Will not delete default branch (${default_branch}) for ${owner}/${repo}, exiting."
-#			exit 0
-#		fi
-#
-#		echo "Deleting branch ref $ref for owner ${owner}/${repo}..."
-#		curl -XDELETE -sSL \
-#			-H "${AUTH_HEADER}" \
-#			-H "${API_HEADER}" \
-#			"${URI_GITHUB}/repos/${owner}/${repo}/git/refs/heads/${ref}"
-#
-#		echo "Branch delete success!"
-#	fi
 
 	if [[ "$action" == 'opened' ]]; then
 	    echo "Adding reviewers to the PR..."
