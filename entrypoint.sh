@@ -99,7 +99,7 @@ main() {
 
 	echo "DEBUG -> action: $action merged: $merged pr_number: $pr_number title: $pr_title"
 
-	if [[ "$action" == 'opened' ]]; then
+	if [[ "$action" == 'opened' || "$action" == 'synchronize' ]]; then
 	    echo "Adding reviewers to the PR..."
 	    add_reviewers_to_the_pr
 	    echo "Retrieving the JIRA issue code from the PR title..."
