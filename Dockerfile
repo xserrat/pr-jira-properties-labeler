@@ -9,5 +9,6 @@ RUN	apk add --no-cache \
 	jq
 
 COPY entrypoint.sh /entrypoint.sh
+COPY src /src
 
 ENTRYPOINT ["/entrypoint.sh"]
