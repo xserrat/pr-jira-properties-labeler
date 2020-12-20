@@ -1,51 +1,55 @@
 #!/usr/bin/env bash
 
 github::getReference() {
-    echo $(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.ref
 }
 
 github::getRepoOwner() {
-    echo $(jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.repo.owner.login
 }
 
 github::getRepoName() {
-    echo $(jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.repo.name
 }
 
 github::getEventAction() {
-    echo $(jq --raw-output .action "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .action
 }
 
 github::isPullRequestMerged() {
-    echo $(jq --raw-output .pull_request.merged "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.merged
 }
 
 github::getPullRequestNumber() {
-    echo $(jq --raw-output .number "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .number
 }
 
 github::getPullRequestTitle() {
-    echo $(jq --raw-output .pull_request.title "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.title
 }
 
 github::getPullRequestAuthor() {
-    echo $(jq --raw-output .pull_request.user.login "$GITHUB_EVENT_PATH")
+  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.user.login
 }
 
 github::excludeAuthorFromReviewers() {
-    local all_reviewers=$@
+    local all_reviewers=( "$@" )
 
-    valid_reviewers=( "${all_reviewers[@]/$pr_author/}" )
+    valid_reviewers=( "${all_reviewers[@]}/${pr_author}/" )
 
-    echo $valid_reviewers
+    echo "${valid_reviewers[@]}"
 }
 
 github::addReviewersToThePR() {
-    local reviewers_array=$(echo $REVIEWERS | tr "," "\n")
-    local reviewers_array=$(github::excludeAuthorFromReviewers $reviewers_array)
-    local reviewers_to_add_in_json_format=$(printf '%s\n' "${reviewers_array[@]}" | jq -R . | jq -s .)
+    local reviewers_array
+    reviewers_array=$(echo "$REVIEWERS" | tr "," "\n")
+    reviewers_array=$(github::excludeAuthorFromReviewers "$reviewers_array")
 
-    local path='/pulls/'$(github::getPullRequestNumber)'/requested_reviewers'
+    local reviewers_to_add_in_json_format
+    reviewers_to_add_in_json_format=$(printf '%s\n' "${reviewers_array[@]}" | jq -R . | jq -s .)
+
+    local path
+    path='/pulls/'$(github::getPullRequestNumber)'/requested_reviewers'
 
     local GITHUB_URI='https://api.github.com'
     local API_VERSION='v3'
