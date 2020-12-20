@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
 
 github::getReference() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.ref
+  jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH"
 }
 
 github::getRepoOwner() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.repo.owner.login
+  jq --raw-output .pull_request.head.repo.owner.login "$GITHUB_EVENT_PATH"
 }
 
 github::getRepoName() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.head.repo.name
+  jq --raw-output .pull_request.head.repo.name "$GITHUB_EVENT_PATH"
 }
 
 github::getEventAction() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .action
+  jq --raw-output .action "$GITHUB_EVENT_PATH"
 }
 
 github::isPullRequestMerged() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.merged
+  jq --raw-output .pull_request.merged "$GITHUB_EVENT_PATH"
 }
 
 github::getPullRequestNumber() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .number
+  jq --raw-output .number "$GITHUB_EVENT_PATH"
 }
 
 github::getPullRequestTitle() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.title
+  jq --raw-output .pull_request.title "$GITHUB_EVENT_PATH"
 }
 
 github::getPullRequestAuthor() {
-  echo "$GITHUB_EVENT_PATH" | jq --raw-output .pull_request.user.login
+  jq --raw-output .pull_request.user.login "$GITHUB_EVENT_PATH"
 }
 
 github::excludeAuthorFromReviewers() {

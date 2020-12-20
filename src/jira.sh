@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-jira::get_issue_by_code() {
+jira::getIssueByCode() {
     local issue_code=$1
     local jira_token
     local jira_uri
@@ -58,7 +58,7 @@ jira::getPriorityOf() {
     local issue_code=$1
 
     local issue
-    issue=$(jira::get_issue_by_code "$issue_code")
+    issue=$(jira::getIssueByCode "$issue_code")
 
     if [[ $issue == false ]];then
       echo false
