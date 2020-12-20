@@ -1,4 +1,5 @@
 name: 'Jira Issue Properties'
+author: 'Xavier Serrat'
 description: 'Label a pull request using Jira issue properties'
 inputs:
   GITHUB_TOKEN:
@@ -12,11 +13,13 @@ inputs:
     required: true
   regexp_jira_issue_code_on_pr_title:
     description: 'Regular expression to identify the JIRA issue code on a PR title'
-    required: true
+    required: false
+    default: '([A-Z]{3}-[0-9]{4}).*'
   issue_properties:
     description: 'The list of issue properties to add in the PR'
     required: false
-    default: 'priority'
+    default:
+      - {property: 'priority', display_name: 'Prio'}
 outputs:
   jira_issue_code:
     description: 'Jira Issue Code'
