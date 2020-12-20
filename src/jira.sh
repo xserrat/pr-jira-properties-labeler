@@ -48,7 +48,7 @@ jira::makeRequest() {
     http_code=$(echo "$response" | awk -F "$bodyAndHttpCodeDelimiter" '{print $2}')
 
     if [[ $http_code -eq 200 ]];then
-      echo $jira_issue
+      echo "$jira_issue"
     else
       echo false
     fi
