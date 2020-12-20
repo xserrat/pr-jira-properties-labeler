@@ -5,8 +5,8 @@ source "$ROOT_DIRECTORY/src/jira.sh"
 
 action::setInputVariables() {
     GITHUB_TOKEN=$1
-    JIRA_URI=$2
-    JIRA_ENCODED_TOKEN=$3
+    JIRA_ENCODED_TOKEN=$2
+    JIRA_URI=$3
     REGEXP_JIRA_ISSUE_CODE_ON_PR_TITLE=$4
     ISSUE_PROPERTIES=$5
 }

@@ -25,13 +25,37 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JIRA_ENCODED_TOKEN: ${{ secrets.JIRA_ENCODED_TOKEN }}
-          URI_JIRA: ${{ secrets.URI_JIRA }}
+          JIRA_URI: ${{ secrets.JIRA_URI }}
           regexp_jira_issue_code_on_pr_title: '^([A-Z]{4}).*'
           issue_properties:
-            - {property: 'priority', display_name: 'Prio'}
+            - { property: 'priority', display_name: 'Prio' }
 ```
 
 ## Inputs
+
+Those inputs marked as `secret` (🤫) need to be added here: `https://github.com/{username}/{repository}/settings/secrets`.
+
+### 🤫`GITHUB_TOKEN`:
+
+**Required**
+It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
+
+### 🤫`JIRA_ENCODED_TOKEN`:
+
+It's the needed token to make requests to the JIRA api.
+
+This token is the combination in base64 of your user email to access
+to your Jira and the API token created in the following section:
+
+`Your profile > Manage your account > Security > API Token: Create and manage API tokens > Create API token`
+
+So, to obtain the `JIRA_ENCODED_TOKEN` you have to execute the following:
+```bash
+echo -n "your-email-for-jira-account:your-api-token" | base64
+```
+
+### 🤫 `JIRA_URI`:
+It's the URI of Jira used to enter through the browser. Example: `https://mycompany.atlassian.net` or `https://mycompany.jira.com`
 
 ### `regexp_jira_issue_code_on_pr_title`
 
@@ -45,28 +69,6 @@ Using the default value, the action will parse those PRs with a title like: "**A
 **Required**
 A list of properties you want to add as labels in your Pull Request.
 Right now, the current property available is `priority` but in the future you can select more.
-
-## Secrets:
-
-To add any secret to Github you need to go to `https://github.com/{username}/{repository}/settings/secrets` and add a new one.
-
-### `GITHUB_TOKEN`:
-
-It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
-
-### `JIRA_ENCODED_TOKEN`:
-
-It's the needed token to make requests to the JIRA api. This token is the combination in base64 of your user email to access
-to your Jira and the API token created in the following section: 
-`Your profile > Manage your account > Security > API Token: Create and manage API tokens > Create API token`
-
-So, to obtain the `JIRA_ENCODED_TOKEN` you have to execute the following:
-```bash
-echo -n "your-email-for-jira-account:your-api-token" | base64
-```
-
-### `URI_JIRA`:
-It's the URI of Jira used to enter through the browser. Example: `https://mycompany.atlassian.net` or `https://mycompany.jira.com`
 
 ### Example
 
