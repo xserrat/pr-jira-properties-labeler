@@ -25,8 +25,8 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.GITHUB_TOKEN }}
-    - ${{ inputs.JIRA_URI }}
     - ${{ inputs.JIRA_ENCODED_TOKEN }}
+    - ${{ inputs.JIRA_URI }}
     - ${{ inputs.regexp_jira_issue_code_on_pr_title }}
     - ${{ inputs.issue_properties }}
 branding:

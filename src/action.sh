@@ -12,25 +12,25 @@ action::setInputVariables() {
 }
 
 action::input::githubToken() {
-    echo $GITHUB_TOKEN
+    echo "$GITHUB_TOKEN"
 }
 
 action::input::jiraUri() {
-    echo $JIRA_URI
+    echo "$JIRA_URI"
 }
 
 action::input::jiraEncodedToken() {
-    echo $JIRA_ENCODED_TOKEN
+    echo "$JIRA_ENCODED_TOKEN"
 }
 
 action::input::regexpJiraCodeOnPrTitle() {
     local input_regexp=$REGEXP_JIRA_ISSUE_CODE_ON_PR_TITLE
 
     if [[ -z $input_regexp ]]; then
-        echo '([A-Z]{3}-[0-9]{4}).*'
+        echo '^([A-Z]{3}-[0-9]{4}).*'
     fi
 
-    echo $input_regexp
+    echo "$input_regexp"
 }
 
 action::input:issueProperties() {

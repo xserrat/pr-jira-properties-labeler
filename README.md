@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JIRA_ENCODED_TOKEN: ${{ secrets.JIRA_ENCODED_TOKEN }}
           JIRA_URI: ${{ secrets.JIRA_URI }}
-          regexp_jira_issue_code_on_pr_title: '^([A-Z]{4}).*'
+          regexp_jira_issue_code_on_pr_title: '^([A-Z]{3}-[0-9]{4}).*'
           issue_properties: '[priority]'
 ```
 
