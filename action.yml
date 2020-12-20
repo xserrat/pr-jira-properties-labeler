@@ -18,8 +18,7 @@ inputs:
   issue_properties:
     description: 'The list of issue properties to add in the PR'
     required: false
-    default:
-      - {property: 'priority', display_name: 'Prio'}
+    default: '[priority]'
 
 runs:
   using: 'docker'
