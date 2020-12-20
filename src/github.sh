@@ -65,17 +65,19 @@ github::addReviewersToThePR() {
 
 github::addLabelsToThePR() {
     local all_raw_labels=$@
-    local labels_array=$(echo $all_raw_labels | tr "," "\n")
-    local labels_to_add_in_json_format=$(printf '%s\n' "${labels_array[@]}" | jq -R . | jq -s .)
+    local labels_array=$(echo $all_raw_labels | tr " " "\n")
+    local labels_to_add_in_json_format=$(printf '%s\n' "$labels_array" | jq -R | jq -sc)
 
     local GITHUB_URI='https://api.github.com'
     local API_VERSION='v3'
     local API_HEADER="Accept: application/vnd.github.${API_VERSION}+json"
     local AUTH_HEADER='Authorization: token '$(action::input::githubToken)
 
-    curl -X POST \
-    -H "${AUTH_HEADER}" \
-    -H "${API_HEADER}" \
-    -d '{"labels": '"${labels_to_add_in_json_format}"'}' \
-    "${GITHUB_URI}/repos/$(github::getRepoOwner)/$(github::getRepoName)/issues/'$(github::getPullRequestNumber)'/labels"
+    echo "Labels -> $labels_to_add_in_json_format"
+    curl \
+      -X POST \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      "${GITHUB_URI}/repos/$(github::getRepoOwner)/$(github::getRepoName)/issues/$(github::getPullRequestNumber)/labels" \
+      -d '{"labels": '"${labels_to_add_in_json_format}"'}'
 }
