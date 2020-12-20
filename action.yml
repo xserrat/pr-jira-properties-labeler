@@ -20,9 +20,6 @@ inputs:
     required: false
     default:
       - {property: 'priority', display_name: 'Prio'}
-outputs:
-  jira_issue_code:
-    description: 'Jira Issue Code'
 
 runs:
   using: 'docker'
