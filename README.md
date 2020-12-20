@@ -34,9 +34,23 @@ action "Label Pull Request" {
 
 To add any secret to Github you need to go to `https://github.com/{username}/{repository}/settings/secrets` and add a new one.
 
-* `GITHUB_TOKEN`: It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
-* `JIRA_ENCODED_TOKEN`: It's the needed token to make requests to the JIRA api. To create it, go to: `Your profile > Manage your account > Security > Create and manage API tokens > Create API token`
-* `URI_JIRA`: It's URI of Jira. Example: `mycompany.jira.com`
+* `GITHUB_TOKEN`:
+
+It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
+
+* `JIRA_ENCODED_TOKEN`:
+
+It's the needed token to make requests to the JIRA api. This token is the combination in base64 of your user email to access
+to your Jira and the API token created in the following section: 
+`Your profile > Manage your account > Security > API Token: Create and manage API tokens > Create API token`
+
+So, to obtain the `JIRA_ENCODED_TOKEN` you have to execute the following:
+```bash
+echo -n "your-email-for-jira-account:your-api-token" | base64
+```
+
+* `URI_JIRA`:
+It's URI of Jira used to enter through the browser. Example: `mycompany.atlassian.net` or `mycompany.jira.com`
 
 #### Environment variables:
 
