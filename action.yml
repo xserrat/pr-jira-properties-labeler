@@ -1,4 +1,4 @@
-name: 'Jira Issue Properties'
+name: 'Pull Request JIRA properties labeler'
 author: 'Xavier Serrat'
 description: 'Label a pull request using Jira issue properties'
 inputs:
