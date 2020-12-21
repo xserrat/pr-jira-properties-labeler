@@ -1,54 +1,73 @@
-# Github Actions
+# Pull Request JIRA properties labeler
 
-This repository contains some custom Github actions.
+This action adds Jira issue properties as labels in your Pull Request.
+You can customize which properties you want to add as labels [here](https://github.com/xserrat/pr-jira-properties-labeler#issue_properties):
 
-## 1. Label Pull Request
+* `priority`: Shows the name of the priority defined in the Jira issue.  
 
-This action allows you to add specific labels when a PR is opened. Also, the action is connected to Jira in order to retrieve
-the priority of the feature using the issue code added in the PR title. You have to take into account that you need to listen to the `pull_request` event in order to use this action. Here you have an example:
+## Usage
 
-```hcl
-workflow "on pull request label it" {
-  on = "pull_request"
-  resolves = [
-    "Label Pull Request"
-  ]
-}
+```yaml
+name: On pull request opened
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  jira_labels:
+    runs-on: ubuntu-latest
+    name: Label Pull Request with Jira properties
+    steps:
+      - name: Label with Jira issue properties
+        uses: xserrat/pr-jira-properties-labeler@1.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JIRA_ENCODED_TOKEN: ${{ secrets.JIRA_ENCODED_TOKEN }}
+          JIRA_URI: ${{ secrets.JIRA_URI }}
+          regexp_jira_issue_code_on_pr_title: '^([A-Z]{3}-[0-9]{4}).*'
+          issue_properties: '[priority]'
 ```
 
-### Usage:
+## Inputs
 
-```hcl
-action "Label Pull Request" {
-  uses = "xserrat/github-actions/action/label-pull-request@master"
-  secrets = ["GITHUB_TOKEN", "JIRA_ENCODED_TOKEN", "URI_JIRA"]
-  env = {
-    REVIEWERS = "maintainer1,maintainer2"
-    REGEXP_FOR_JIRA_CODE_ON_PR_TITLE = "^([A-Z]{4}-[0-9]{4}).*"
-    LABELS_ON_PULL_REQUEST_OPENED = "needs feedback"
-  }
-}
+Those inputs marked as `secret` (🤫) need to be added here: `https://github.com/{username}/{repository}/settings/secrets`.
+
+### 🤫`GITHUB_TOKEN`:
+
+**Required**
+It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
+
+### 🤫`JIRA_ENCODED_TOKEN`:
+
+It's the needed token to make requests to the JIRA api.
+
+This token is the combination in base64 of your user email to access
+to your Jira and the API token created in the following section:
+
+`Your profile > Manage your account > Security > API Token: Create and manage API tokens > Create API token`
+
+So, to obtain the `JIRA_ENCODED_TOKEN` you have to execute the following:
+```bash
+echo -n "your-email-for-jira-account:your-api-token" | base64
 ```
 
-#### Secrets:
+### 🤫 `JIRA_URI`:
+It's the URI of Jira used to enter through the browser. Example: `https://mycompany.atlassian.net` or `https://mycompany.jira.com`
 
-To add any secret to Github you need to go to `https://github.com/{username}/{repository}/settings/secrets` and add a new one.
+### `regexp_jira_issue_code_on_pr_title`
 
-* `GITHUB_TOKEN`: It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO ADD IT)
-* `JIRA_ENCODED_TOKEN`: It's the needed token to make requests to the JIRA api. To create it, go to: `Your profile > Manage your account > Security > Create and manage API tokens > Create API token`
-* `URI_JIRA`: It's URI of Jira. Example: `mycompany.jira.com`
+**Required**
+The regular expression to obtain the issue code of your pull request from the PR title.
+Default `"^([A-Z]{3}-[0-9]{4}).*"`.
 
-#### Environment variables:
+Using the default value, the action will parse those PRs with a title like: "**ABC-1234** Feature to do something".
 
-To customize this action you have the following environment variables:
-
-* `REVIEWERS`: The list of all maintainers to be added in the PR (separated by commas without spaces)
-
-* `REGEXP_FOR_JIRA_CODE_ON_PR_TITLE`: The regular expression to obtain the Jira issue code from the pull request title.
-In the example we have a code like: "**ABCD-1234** Feature to make something". The issue code is used to retrieve the priority of the issue from Jira and add it as a label in order to prioritize the code review.
-
-* `LABELS_ON_PULL_REQUEST_OPENED`: List of labels that will be added to the PR when opened.
-
+### `issue_properties`
+**Required**
+A list of properties you want to add as labels in your Pull Request.
+Right now, the current property available is `priority` but in the future you can select more.
 
 ### Example
 

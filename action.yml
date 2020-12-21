@@ -1,0 +1,34 @@
+name: 'Jira Issue Properties'
+author: 'Xavier Serrat'
+description: 'Label a pull request using Jira issue properties'
+inputs:
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
+  JIRA_URI:
+    description: 'Jira URI of your organization'
+    required: true
+  JIRA_ENCODED_TOKEN:
+    description: 'Jira encoded token to access to the Jira API'
+    required: true
+  regexp_jira_issue_code_on_pr_title:
+    description: 'Regular expression to identify the JIRA issue code on a PR title'
+    required: false
+    default: '([A-Z]{3}-[0-9]{4}).*'
+  issue_properties:
+    description: 'The list of issue properties to add in the PR'
+    required: false
+    default: '[priority]'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.GITHUB_TOKEN }}
+    - ${{ inputs.JIRA_ENCODED_TOKEN }}
+    - ${{ inputs.JIRA_URI }}
+    - ${{ inputs.regexp_jira_issue_code_on_pr_title }}
+    - ${{ inputs.issue_properties }}
+branding:
+  icon: 'tag'
+  color: 'blue'
