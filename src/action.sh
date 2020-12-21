@@ -80,18 +80,4 @@ action::run() {
 
     echo "Adding priority label to the PR..."
 	  action::addPriorityLabel "$issue_code"
-
-
-#	    echo "Adding reviewers to the PR..."
-#	    github::addReviewersToThePR
-
-#
-#	    echo "Retrieving the JIRA issue code from the PR title..."
-#	    local issue_code=$(get_jira_code_from_pr_title $pr_title)
-#	    echo "Retrieving the priority of the issue code $issue_code from JIRA..."
-#	    local priority=$(get_jira_priority_of $issue_code)
-#        echo "Appending the priority label $priority to the labels to add when PR is opened..."
-#	    LABELS_ON_PULL_REQUEST_OPENED+=",$priority"
-#        echo "Adding labels $LABELS_ON_PULL_REQUEST_OPENED to the PR..."
-#	    add_labels_to_the_pr $LABELS_ON_PULL_REQUEST_OPENED
 }
