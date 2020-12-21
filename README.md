@@ -67,7 +67,8 @@ Using the default value, the action will parse those PRs with a title like: "**A
 ### `issue_properties`
 **Required**
 A list of properties you want to add as labels in your Pull Request.
-Right now, the current property available is `priority` but in the future you can select more.
+
+Right now, the only property available is `priority` but in the future you can select more.
 
 ### Example
 
