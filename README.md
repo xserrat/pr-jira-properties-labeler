@@ -21,7 +21,7 @@ jobs:
     name: Label Pull Request with Jira properties
     steps:
       - name: Label with Jira issue properties
-        uses: xserrat/pr-jira-properties-labeler@1.0.0
+        uses: xserrat/pr-jira-properties-labeler@v1.0.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JIRA_ENCODED_TOKEN: ${{ secrets.JIRA_ENCODED_TOKEN }}
