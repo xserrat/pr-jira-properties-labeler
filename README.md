@@ -1,6 +1,6 @@
-# Pull Request JIRA properties labeler
+# JIRA properties labeler on Pull Request
 
-This action adds Jira issue properties as labels in your Pull Request.
+This action adds JIRA issue properties as labels in your Pull Request.
 You can customize which properties you want to add as labels [here](https://github.com/xserrat/pr-jira-properties-labeler#issue_properties):
 
 * `priority`: Shows the name of the priority defined in the Jira issue.  
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Label Pull Request with Jira properties
     steps:
-      - name: Label with Jira issue properties
+      - name: Label with JIRA issue properties
         uses: xserrat/pr-jira-properties-labeler@v1.0.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +44,7 @@ It's a needed secret (THIS TOKEN IS FULFILLED AUTOMATICALLY, YOU DON'T HAVE TO A
 It's the needed token to make requests to the JIRA api.
 
 This token is the combination in base64 of your user email to access
-to your Jira and the API token created in the following section:
+to your JIRA and the API token created in the following section:
 
 `Your profile > Manage your account > Security > API Token: Create and manage API tokens > Create API token`
 
@@ -54,7 +54,7 @@ echo -n "your-email-for-jira-account:your-api-token" | base64
 ```
 
 ### 🤫 `JIRA_URI`:
-It's the URI of Jira used to enter through the browser. Example: `https://mycompany.atlassian.net` or `https://mycompany.jira.com`
+It's the URI of JIRA used to enter through the browser. Example: `https://mycompany.atlassian.net` or `https://mycompany.jira.com`
 
 ### `regexp_jira_issue_code_on_pr_title`
 

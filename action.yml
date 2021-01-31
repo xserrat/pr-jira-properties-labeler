@@ -1,6 +1,6 @@
-name: 'Pull Request JIRA properties labeler'
+name: 'JIRA properties labeler on Pull Request'
 author: 'Xavier Serrat'
-description: 'Label a pull request using Jira issue properties'
+description: 'Label a Pull Request using JIRA issue properties'
 inputs:
   GITHUB_TOKEN:
     description: 'GitHub token'
